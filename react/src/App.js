@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, { Component, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Person from './Components/Person';
@@ -7,84 +7,113 @@ import Person from './Components/Person';
 
 class App extends Component {
   // Create state as js objects
-  state = {persons:  [
-                      { name: 'Max', age: 30 },
-                      { name: 'Ed', age: 24 },
-                      { name: 'George', age: 60 }, 
-                    ],
-                    otherState: 'some state we dont want to touch',
-                    showPersons: false
+  state = {
+    persons: [
+      { id: 'asfa1', name: 'Max', age: 28 },
+      { id: 'vasdf1', name: 'Manu', age: 29 },
+      { id: 'asdf11', name: 'Stephanie', age: 26 }
+    ],
+    otherState: 'some state we dont want to touch',
+    showPersons: false
 
-           }
+  }
 
-           switchNameHandler = (newName) => {
-             console.log('switchNameHandler triggered')
-             this.setState({persons:  [
-              { name: newName, age: 30 },
-              { name: 'adasfs', age: 32 },
-              { name: 'Georsdfsfasdge', age: 60 }, 
-            ]
-            })
-           }
+  switchNameHandler = (newName) => {
+    console.log('switchNameHandler triggered')
+    this.setState({
+      persons: [
+        { id:1, name: newName, age: 30 },
+        { id:2, name: 'adasfs', age: 32 },
+        { id:3, name: 'Georsdfsfasdge', age: 60 },
+      ]
+    })
+  }
 
-           nameChangedHandler = (event) => {
+  nameChangedHandler = (event, id) => {
+    // Fetch the ndex of the person from the persons array
+    const personIndex = this.state.persons.findIndex(p => {
+        return p.id === id;
+      });
+      // make a copy of the person
+    const person = {...this.state.persons[personIndex]};
+    
+    // update the person object
+    person.name = event.target.value
+    
+    // make a copy of the persons and replace person
+    const persons = [...this.state.persons];
+    persons[personIndex] = person
+    
+    // Update the state
+    this.setState({persons: persons})
+    
+  }
 
-            this.setState({persons:  [
-            { name: 'Max', age: 30 },
-            { name: event.target.value, age: 32 },
-            { name: 'Georsdfsfasdge', age: 60 }, 
-          ]
-           })
-          }
+  toggleNameHandler = () => {
+    console.log('ToggleNameHandler')
+    const doesShow = this.state.showPersons;
+    console.log(!doesShow)
+    this.setState({ showPersons: !doesShow });
+  }
 
-          toggleNameHandler = () => {
-            console.log('heres')
-            const doesShow = this.state.showPersons;
-            console.log(doesShow  )
-            this.setState({showPersons: !doesShow});
-          }
+
+  deletePersonHandler = (personIndex) => {
+    const persons = [...this.state.persons];
+    persons.splice(personIndex, 1);
+    this.setState({persons: persons});
+  }
+
+
+
 
   render() {
+
+
+    let persons = null;
+
+    if (this.state.showPersons) {
+      console.log('Rendering persons')
+      persons = (
+        <div>
+          {this.state.persons.map((person, index) => {
+            return <Person
+                    click={() => this.deletePersonHandler(index)} 
+                    key={person.id} 
+                    name={person.name} 
+                    age={person.age} 
+                    changed={(event) => this.nameChangedHandler(event, person.id)}
+                    />
+            })}
+        </div>  
+      )
+    }
+
+
     return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and asdasd to reload.
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            Edit <code>src/App.js</code> and asdasd to reload.
         </p>
-        <button onClick={this.switchNameHandler.bind(this, 'newName = ED' )} >Switch Name</button>
+          <button onClick={this.switchNameHandler.bind(this, 'newName = ED')} >Switch Name</button>
 
-        <button onClick={this.toggleNameHandler} >Toggle Name</button>
+          <button onClick={this.toggleNameHandler} >Toggle Name</button>
 
-        {this.state.showPersons === true ? 
-              <div>
-                <Person 
-                    name={this.state.persons[0].name} 
-                    age={this.state.persons[0].age}/>
-                {/* Pass the switch to through to the component */}
-                <Person 
-                name={this.state.persons[1].name} 
-                age={this.state.persons[1].age} 
-                changed={this.nameChangedHandler} 
-                click={this.switchNameHandler}/>
-                <Person name={this.state.persons[2].name} age={this.state.persons[2].age}>children elements </Person>
+          {persons}
 
-              </div> : null
-
-      }
-
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
+          <a
+            className="App-link"
+            href="https://reactjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn React
         </a>
-      </header>
-    </div>
+        </header>
+      </div>
     );
-    };
+  };
 }
 
 export default App;
